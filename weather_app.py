@@ -13,32 +13,48 @@ def get_weather(city):
 
 # Streamlit app
 def main():
-    st.set_page_config(page_title="Weather App", page_icon="🌤", layout="centered")
-    st.title("🌎 Weather App")
+    st.set_page_config(page_title="Weather App", page_icon="🌤", layout="wide")
+    st.markdown("""
+        <style>
+            .main-title {
+                text-align: center;
+                font-size: 36px;
+                font-weight: bold;
+                color: #ff5733;
+            }
+            .weather-container {
+                background-color: #f0f2f6;
+                padding: 20px;
+                border-radius: 15px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<h1 class='main-title'>🌎 Weather App</h1>", unsafe_allow_html=True)
     st.write("Enter the name of a city to get the current weather information.")
 
-    # Input for city name
     city = st.text_input("🌆 City Name", placeholder="Enter city name...")
-
-    # Fetch and display weather information
+    
     if st.button("🔍 Get Weather"):
         if city:
             data = get_weather(city)
             if data["cod"] == 200:
-                col1, col2 = st.columns(2)
+                st.markdown("<div class='weather-container'>", unsafe_allow_html=True)
+                col1, col2 = st.columns([1, 2])
                 with col1:
-                    st.subheader(f"📍 {data['name']}, {data['sys']['country']}")
-                    st.image(f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png", width=100)
+                    st.image(f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@4x.png", width=150)
                 with col2:
+                    st.subheader(f"📍 {data['name']}, {data['sys']['country']}")
                     st.metric("🌡 Temperature", f"{data['main']['temp']} °C")
                     st.metric("💧 Humidity", f"{data['main']['humidity']}%")
                     st.metric("🌬 Wind Speed", f"{data['wind']['speed']} m/s")
-
+                    st.metric("🌡 Feels Like", f"{data['main']['feels_like']} °C")
+                
                 st.write(f"**Weather:** {data['weather'][0]['description'].title()}")
-                st.write(f"**Feels Like:** {data['main']['feels_like']} °C")
                 st.write(f"**Pressure:** {data['main']['pressure']} hPa")
                 st.write(f"**Sunrise:** {datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')} UTC")
                 st.write(f"**Sunset:** {datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')} UTC")
+                st.markdown("</div>", unsafe_allow_html=True)
             else:
                 st.error("❌ City not found. Please enter a valid city name.")
         else:
