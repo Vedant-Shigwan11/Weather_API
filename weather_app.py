@@ -1,8 +1,6 @@
 import streamlit as st
 import requests
 from datetime import datetime
-import folium
-from streamlit_folium import folium_static
 
 # OpenWeatherMap API key
 API_KEY = '0efff74ba5af8136291968aa32d12a7a'
@@ -30,6 +28,8 @@ def main():
                 border-radius: 15px;
                 margin-bottom: 10px;
                 text-align: center;
+                font-size: 18px;
+                font-weight: bold;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -43,16 +43,11 @@ def main():
         if city:
             data = get_weather(city)
             if data["cod"] == 200:
-                lat, lon = data['coord']['lat'], data['coord']['lon']
-                map_ = folium.Map(location=[lat, lon], zoom_start=10)
-                folium.Marker([lat, lon], tooltip=city, icon=folium.Icon(color='red')).add_to(map_)
-
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     st.image(f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@4x.png", width=150)
-                    folium_static(map_)
                 with col2:
-                    st.markdown(f"<div class='weather-box'><h3>📍 {data['name']}, {data['sys']['country']}</h3></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>📍 Location: <b>{data['name']}, {data['sys']['country']}</b></div>", unsafe_allow_html=True)
                     st.markdown(f"<div class='weather-box'>🌡 Temperature: <b>{data['main']['temp']} °C</b></div>", unsafe_allow_html=True)
                     st.markdown(f"<div class='weather-box'>💧 Humidity: <b>{data['main']['humidity']}%</b></div>", unsafe_allow_html=True)
                     st.markdown(f"<div class='weather-box'>🌬 Wind Speed: <b>{data['wind']['speed']} m/s</b></div>", unsafe_allow_html=True)
