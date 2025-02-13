@@ -13,23 +13,34 @@ def get_weather(city):
 
 # Streamlit app
 def main():
-    st.set_page_config(page_title="Weather App", page_icon="🌤", layout="wide")
+    st.set_page_config(page_title="Weather App", page_icon="🌤", layout="centered")
     st.markdown("""
         <style>
+            body {
+                background-color: #1e1e2e;
+                color: #ffffff;
+            }
             .main-title {
                 text-align: center;
                 font-size: 36px;
                 font-weight: bold;
-                color: #ff5733;
+                color: #ff9800;
+            }
+            .weather-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+                margin-top: 20px;
             }
             .weather-box {
-                background-color: #f0f2f6;
+                background-color: #292b3a;
                 padding: 20px;
-                border-radius: 15px;
-                margin-bottom: 10px;
+                border-radius: 12px;
                 text-align: center;
                 font-size: 18px;
                 font-weight: bold;
+                width: 200px;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -43,19 +54,18 @@ def main():
         if city:
             data = get_weather(city)
             if data["cod"] == 200:
-                col1, col2 = st.columns([1, 2])
-                with col1:
-                    st.image(f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@4x.png", width=150)
-                with col2:
-                    st.markdown(f"<div class='weather-box'>📍 Location: <b>{data['name']}, {data['sys']['country']}</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>🌡 Temperature: <b>{data['main']['temp']} °C</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>💧 Humidity: <b>{data['main']['humidity']}%</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>🌬 Wind Speed: <b>{data['wind']['speed']} m/s</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>🌡 Feels Like: <b>{data['main']['feels_like']} °C</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>🌤 Weather: <b>{data['weather'][0]['description'].title()}</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>📊 Pressure: <b>{data['main']['pressure']} hPa</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>🌅 Sunrise: <b>{datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')} UTC</b></div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='weather-box'>🌇 Sunset: <b>{datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')} UTC</b></div>", unsafe_allow_html=True)
+                st.image(f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@4x.png", width=120)
+                st.markdown("<div class='weather-container'>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>📍 <b>{data['name']}, {data['sys']['country']}</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>🌡 <b>{data['main']['temp']} °C</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>💧 <b>{data['main']['humidity']}%</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>🌬 <b>{data['wind']['speed']} m/s</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>🌡 Feels Like: <b>{data['main']['feels_like']} °C</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>🌤 <b>{data['weather'][0]['description'].title()}</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>📊 <b>{data['main']['pressure']} hPa</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>🌅 <b>{datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')} UTC</b></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='weather-box'>🌇 <b>{datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')} UTC</b></div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
             else:
                 st.error("❌ City not found. Please enter a valid city name.")
         else:
