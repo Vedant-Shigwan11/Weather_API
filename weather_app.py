@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # OpenWeatherMap API key
-API_KEY = 'your_openweathermap_api_key'
+API_KEY = '0efff74ba5af8136291968aa32d12a7a'
 
 # Function to get weather data
 def get_weather(city):
