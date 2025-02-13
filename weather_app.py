@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 from datetime import datetime
+import folium
+from streamlit_folium import folium_static
 
 # OpenWeatherMap API key
 API_KEY = '0efff74ba5af8136291968aa32d12a7a'
@@ -22,10 +24,12 @@ def main():
                 font-weight: bold;
                 color: #ff5733;
             }
-            .weather-container {
+            .weather-box {
                 background-color: #f0f2f6;
                 padding: 20px;
                 border-radius: 15px;
+                margin-bottom: 10px;
+                text-align: center;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -39,22 +43,24 @@ def main():
         if city:
             data = get_weather(city)
             if data["cod"] == 200:
-                st.markdown("<div class='weather-container'>", unsafe_allow_html=True)
+                lat, lon = data['coord']['lat'], data['coord']['lon']
+                map_ = folium.Map(location=[lat, lon], zoom_start=10)
+                folium.Marker([lat, lon], tooltip=city, icon=folium.Icon(color='red')).add_to(map_)
+
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     st.image(f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@4x.png", width=150)
+                    folium_static(map_)
                 with col2:
-                    st.subheader(f"📍 {data['name']}, {data['sys']['country']}")
-                    st.metric("🌡 Temperature", f"{data['main']['temp']} °C")
-                    st.metric("💧 Humidity", f"{data['main']['humidity']}%")
-                    st.metric("🌬 Wind Speed", f"{data['wind']['speed']} m/s")
-                    st.metric("🌡 Feels Like", f"{data['main']['feels_like']} °C")
-                
-                st.write(f"**Weather:** {data['weather'][0]['description'].title()}")
-                st.write(f"**Pressure:** {data['main']['pressure']} hPa")
-                st.write(f"**Sunrise:** {datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')} UTC")
-                st.write(f"**Sunset:** {datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')} UTC")
-                st.markdown("</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'><h3>📍 {data['name']}, {data['sys']['country']}</h3></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>🌡 Temperature: <b>{data['main']['temp']} °C</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>💧 Humidity: <b>{data['main']['humidity']}%</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>🌬 Wind Speed: <b>{data['wind']['speed']} m/s</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>🌡 Feels Like: <b>{data['main']['feels_like']} °C</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>🌤 Weather: <b>{data['weather'][0]['description'].title()}</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>📊 Pressure: <b>{data['main']['pressure']} hPa</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>🌅 Sunrise: <b>{datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')} UTC</b></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='weather-box'>🌇 Sunset: <b>{datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')} UTC</b></div>", unsafe_allow_html=True)
             else:
                 st.error("❌ City not found. Please enter a valid city name.")
         else:
